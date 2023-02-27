@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Convert to Roman Numeral</title>
+  </head>
+  <body>
+    <h1>Convert to Roman Numeral</h1>
+    <form id="convert-form">
+      <label for="number-input">Enter a number between 0 and 100:</label>
+      <input type="number" id="number-input" name="n" min="0" max="100" required>
+      <button type="submit" id="http">Convert with http request</button>
+      <button type="submit" id="sse">Convert with sse</button>
+    </form>
+
+    <div id="result-container"></div>
+
+    <script>
+      const input = document.querySelector('#number-input');
+      const httpButton = document.querySelector('#http');
+      const sseButton = document.querySelector('#sse');
+      const resultContainer = document.querySelector('#result-container');
+      const API_URL = "http://127.0.0.1:8080"
+
+      httpButton.addEventListener('click', async (event) => {
+        event.preventDefault();
+        const n = input.value;
+        try {
+          // Send request to HTTP endpoint
+          console.log(`${API_URL}/convert/${n}`)
+          const response = await fetch(`${API_URL}/convert/${n}`);
+          const data = await response.json();
+          resultContainer.textContent = data.value;
+        } catch (err) {
+          resultContainer.textContent = `Error: ${err.message}`;
+        }
+      });
+
+      sseButton.addEventListener('click', async (event) => {
+        event.preventDefault();
+        const n = input.value;
+        try {
+          // Open SSE connection to SSE endpoint
+          const sse = new EventSource(`${API_URL}/sse/${n}`);
+          sse.onmessage = (event) => {
+            console.log(event)
+            resultContainer.textContent = event.data;
+          };
+        } catch (err) {
+          console.error(err)
+          resultContainer.textContent = `Error: ${err.message}`;
+        }
+      });
+    </script>
+  </body>
+</html>
