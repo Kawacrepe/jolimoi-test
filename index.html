@@ -26,7 +26,6 @@
         const n = input.value;
         try {
           // Send request to HTTP endpoint
-          console.log(`${API_URL}/convert/${n}`)
           const response = await fetch(`${API_URL}/convert/${n}`);
           const data = await response.json();
           resultContainer.textContent = data.value;
@@ -42,11 +41,9 @@
           // Open SSE connection to SSE endpoint
           const sse = new EventSource(`${API_URL}/sse/${n}`);
           sse.onmessage = (event) => {
-            console.log(event)
             resultContainer.textContent = event.data;
           };
         } catch (err) {
-          console.error(err)
           resultContainer.textContent = `Error: ${err.message}`;
         }
       });
